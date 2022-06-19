@@ -1,0 +1,56 @@
+#include<Servo.h>              //servo motor kütüphanesini ekle
+
+#define led 6                  //6 nolu pine led ismini ver
+#define alarm 7
+#define yagmur A0
+
+Servo motor;
+int su_miktari ;               //int tipinde su_miktari adında bir değişken oluştur
+int uyari = 0 ;                //int tipinde uyari adında bir değişken oluştur ve başlangıç olarak 0 yükle
+
+void setup() {
+  pinMode(3,OUTPUT);           // 3 nolu pini çıkış olarak ayarla
+  pinMode(led,OUTPUT);
+  pinMode(alarm,OUTPUT);
+  pinMode(yagmur,INPUT);       // yagmur isimli pini giriş olarak ayarla
+  motor.attach(9);
+
+  Serial.begin(9600);          // haberleşmeyi 9600 bps hızında başlat
+ }
+
+void loop() {
+  int isik = analogRead(A5);            // int tipinde isik adinda bir değişken oluşturup a5 pinini analog olarak okuyoruz
+  Serial.println(isik);                 // seri port ekranına isik yaz bir alt satıra geç
+  delay(50);                            // bu komutları 50ms de bir tekrarla
+  su_miktari = analogRead(yagmur);      // yagmur adlı değişkeni analog olarak oku ve su miktarina eşitle
+  delay(200);
+  Serial.print("su miktarı");           // seri port ekranına su miktarı yaz
+  Serial.println(su_miktari);           
+  if(su_miktari < 450){                 // eğer su miktarı 450 den küçükse 
+    digitalWrite(led,HIGH);             // led'i yak  
+    digitalWrite(alarm,HIGH);           // alarmı çalıştır
+    delay(500);                       // komutu 500ms saniyede bir tekrarla
+    uyari = uyari + 1;
+  }
+    if(uyari = 3){                      // eğer uyari 3 e eşitlnirse
+      digitalWrite(led,LOW);            // led isimle pine 0v gönder
+      digitalWrite(alarm,LOW);
+      motor.write(180);                 // motoru 180 derece çevir
+      uyari = 0;                        //uyarı yı 0 a eşitle
+    }
+  else{              
+    uyari = 0;                          // uyarıyı 0 a eşitle 
+    motor.write(0);                     // motoru 0 dereceye getir
+  }
+   if(isik > 250){                      // isik 250 den büyükse
+   digitalWrite(3,LOW);                 // 3 nolu pin 0 volt gönder 
+   }
+
+   if(isik < 150){                      // eğer isik 150 den küçükse 
+    digitalWrite(3,HIGH);               // 3 nolu pine +5 volt gönder
+   }   
+
+
+
+  
+}
